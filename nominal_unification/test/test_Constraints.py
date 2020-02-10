@@ -74,7 +74,3 @@ def test_subst():
     assert subst(expr3, sub) == Abs('X', Atom('3'))
     assert subst(expr4, sub) == Abs('X', Var('Z'))
     assert subst(expr5, sub) == Abs('Y', Atom('3'))
-
-test_sameClo()
-test_subst()
-test_extendSubst()
