@@ -2,7 +2,7 @@ from pymonad import *
 
 # partition : (a -> Bool) -> [a] -> ([a], [a])
 def partition(f, x):
-    return (filter(f, x), filter(lambda z: not f(z), x))
+    return (list(filter(f, x)), list(filter(lambda z: not f(z), x)))
 
 # foldr : (a -> b -> b) -> b -> [a] -> b
 def foldr(f, e, l):
