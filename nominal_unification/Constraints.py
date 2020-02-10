@@ -63,11 +63,10 @@ class MultiEquation():
 
 # A substitution is literally just a dicitonary mapping stings (inside variables) to expressions.
 
-# Note, this is stateful, altering the definition of sub.
-# This may cause problems in the future.
 def extendSubst(var, expr, sub):
-    sub[var.string] = expr
-    return sub
+    subp = sub.copy()
+    subp[var.string] = expr
+    return subp
 
 def subst(expr, sub):
     if type(expr) == Var:
