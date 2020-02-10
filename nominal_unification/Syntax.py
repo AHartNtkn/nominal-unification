@@ -68,7 +68,7 @@ class Abs():
     def __hash__(self):
         return hash((type(self), self.expr1, self.expr2))
 
-# expElim : Expr -> (String -> a) -> (String -> a) -> (Expr -> Expr -> a) -> 
+# expElim : Expr -> (String -> a) -> (String -> a) -> (Expr -> Expr -> a) -> a
 def expElim(expr, atomElim, varElim, appElim, absElim):
     if type(expr) == Atom:
         return atomElim(expr.string)
