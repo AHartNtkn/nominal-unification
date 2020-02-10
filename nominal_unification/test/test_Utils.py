@@ -1,3 +1,6 @@
+def test_partition():
+    assert partition(lambda x: x % 2 == 0, [1,2,3,4,5,6,7,8,9]) == ([2,4,6,8], [1,3,5,7,9])
+
 def test_foldr():
     assert foldr(lambda x, y: x ** y, 2, [3,4]) == 43046721
 
