@@ -1,2 +1,2 @@
-# TwitOff
-An application for comparing and predicting tweets 
+# nominal-unification
+A python library implementing nominal unification.
