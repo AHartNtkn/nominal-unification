@@ -3,7 +3,7 @@ from nominal_unification.Exceptions import *
 def test_expElim():
     def atomFun(e):
         return str(e)
-    testAtom = Atom(2)
+    testAtom = 2
     
     def varFun(e):
         return e+2
@@ -23,26 +23,26 @@ def test_expElim():
     assert expElim(testAbs, atomFun, varFun, appFun, absFun) == 10
 
 def test_extend():
-    bm = extend(Atom('cool'), extend(Atom('stuff'), emptyBinderMap()))
+    bm = extend('cool', extend('stuff', emptyBinderMap()))
     
-    assert bm.a2i[Atom("cool")] == 1
-    assert bm.a2i[Atom("stuff")] == 0
+    assert bm.a2i["cool"] == 1
+    assert bm.a2i["stuff"] == 0
 
-    assert bm.i2a[0] == Atom("stuff")
-    assert bm.i2a[1] == Atom("cool")
+    assert bm.i2a[0] == "stuff"
+    assert bm.i2a[1] == "cool"
 
 def test_lookupAtom():
-    bm = extend(Atom('cool'), extend(Atom('stuff'), emptyBinderMap()))
+    bm = extend('cool', extend('stuff', emptyBinderMap()))
 
-    assert lookupAtom(Atom("cool"), bm) == Bound("cool", 1)
-    assert lookupAtom(Atom("stuff"), bm) == Bound("stuff", 0)
-    assert lookupAtom(Atom("new"), bm) == Free("new")
+    assert lookupAtom("cool", bm) == Bound("cool", 1)
+    assert lookupAtom("stuff", bm) == Bound("stuff", 0)
+    assert lookupAtom("new", bm) == Free("new")
 
 def test_lookupIdx():
-    bm = extend(Atom('cool'), extend(Atom('stuff'), emptyBinderMap()))
+    bm = extend('cool', extend('stuff', emptyBinderMap()))
 
-    assert lookupIdx(0, bm) == Atom("stuff")
-    assert lookupIdx(1, bm) == Atom("cool")
+    assert lookupIdx(0, bm) == "stuff"
+    assert lookupIdx(1, bm) == "cool"
 
     try:
         lookupIdx(2, bm)

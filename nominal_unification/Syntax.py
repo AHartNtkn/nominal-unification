@@ -3,22 +3,7 @@ from nominal_unification.Exceptions import *
 # Define basic syntax terms.
 
 # Expressions, made up of atoms, variables, applications, and abstractions.
-class Atom():
-    def __init__(self, string):
-        self.string = string
-
-    def __str__(self):
-        return "A(" + str(self.string) + ")"
-    __repr__ = __str__
-
-    def __eq__(self, other):
-        return type(self) == type(other) and self.string == other.string
-
-    def __lt__(self, other):
-        return type(self) == type(other) and self.string < other.string
-    
-    def __hash__(self):
-        return hash((type(self), self.string))
+# An atom is just a string.
 
 class Var():
     def __init__(self, string):
@@ -68,10 +53,10 @@ class Abs():
     def __hash__(self):
         return hash((type(self), self.expr1, self.expr2))
 
-# expElim : Expr -> (String -> a) -> (String -> a) -> (Expr -> Expr -> a) -> a
+# expElim : Expr -> (String -> a) -> (String -> a) -> (Expr -> Expr -> a) -> 
 def expElim(expr, atomElim, varElim, appElim, absElim):
-    if type(expr) == Atom:
-        return atomElim(expr.string)
+    if type(expr) == str or type(expr) == int:
+        return atomElim(expr)
     elif type(expr) == Var:
         return varElim(expr.string)
     elif type(expr) == App:
@@ -140,9 +125,9 @@ def lookupAtom(atom, binderMap):
     index = binderMap.a2i.get(atom, -1)
     
     if index == -1:
-        return Free(atom.string)
+        return Free(atom)
     
-    return Bound(atom.string, index)
+    return Bound(atom, index)
 
 # lookupIdx : Int -> BinderMap -> Maybe Atom
 def lookupIdx(index, binderMap):

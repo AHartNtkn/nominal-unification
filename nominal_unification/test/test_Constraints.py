@@ -2,19 +2,19 @@ from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 
 def test_sameClo():
-    bm1 = extend(Atom("cool"), extend(Atom("stuff"), emptyBinderMap()))
-    bm2 = extend(Atom("neat"), extend(Atom("stuff"), emptyBinderMap()))
-    bm3 = extend(Atom("neat"), extend(Atom("stuff"), extend(Atom("too"), emptyBinderMap())))
+    bm1 = extend("cool", extend("stuff", emptyBinderMap()))
+    bm2 = extend("neat", extend("stuff", emptyBinderMap()))
+    bm3 = extend("neat", extend("stuff", extend("too", emptyBinderMap())))
 
-    cl1s = Closure(Atom("stuff"), bm1)
-    cl2s = Closure(Atom("stuff"), bm2)
-    cl3s = Closure(Atom("stuff"), bm3)
+    cl1s = Closure("stuff", bm1)
+    cl2s = Closure("stuff", bm2)
+    cl3s = Closure("stuff", bm3)
 
-    cl1c = Closure(Atom("cool"), bm1)
-    cl2c = Closure(Atom("cool"), bm2)
+    cl1c = Closure("cool", bm1)
+    cl2c = Closure("cool", bm2)
 
-    cl1n = Closure(Atom("new"), bm1)
-    cl2n = Closure(Atom("new"), bm2)
+    cl1n = Closure("new", bm1)
+    cl2n = Closure("new", bm2)
     
     assert sameClo(cl1s, cl1s) == True
     assert sameClo(cl1s, cl2s) == True
@@ -52,14 +52,14 @@ def test_sameClo():
     assert sameClo(cl2n, cl2n) == True
 
 def test_extendSubst():
-    sub = extendSubst(Var('X'), Atom('3'),
-          extendSubst(Var('Y'), Atom('2'),
-          extendSubst(Var('X'), Atom('1'), dict([]))))
+    sub = extendSubst(Var('X'), '3',
+          extendSubst(Var('Y'), '2',
+          extendSubst(Var('X'), '1', dict([]))))
     
-    assert sub == {'X':Atom('3'), 'Y':Atom('2')}
+    assert sub == {'X':'3', 'Y':'2'}
 
 def test_subst():
-    sub = extendSubst(Var('X'), Atom('3'), extendSubst(Var('Y'), Atom('2'), dict([])))
+    sub = extendSubst(Var('X'), '3', extendSubst(Var('Y'), '2', dict([])))
     
     expr0 = App(Var('X'), App(Var('Y'), Abs('X', App(Var('X'), Var('Y')))))
     expr1 = Var('X')
@@ -69,8 +69,8 @@ def test_subst():
     expr5 = Abs('Y', Var('X'))
 
     assert subst(expr0, sub) == expr0
-    assert subst(expr1, sub) == Atom('3')
+    assert subst(expr1, sub) == '3'
     assert subst(expr2, sub) == Var('Z')
-    assert subst(expr3, sub) == Abs('X', Atom('3'))
+    assert subst(expr3, sub) == Abs('X', '3')
     assert subst(expr4, sub) == Abs('X', Var('Z'))
-    assert subst(expr5, sub) == Abs('Y', Atom('3'))
+    assert subst(expr5, sub) == Abs('Y', '3')
