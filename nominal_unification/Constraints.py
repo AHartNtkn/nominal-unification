@@ -40,7 +40,7 @@ class NuEquation():
 # A NuProblem is a list of NuEquations
 
 class DeltaEquation():
-    def __init__(self, clo1, clo2, var):
+    def __init__(self, clo1, clo2):
         self.clo1 = clo1 # Clo Var
         self.clo2 = clo2 # Clo Var
     
@@ -51,7 +51,7 @@ class DeltaEquation():
 # A DeltaProblem is a list of DeltaEquations
 
 class MultiEquation():
-    def __init__(self, clo1, clo2, var):
+    def __init__(self, clo1, clo2):
         self.clo1 = clo1 # Clo Expr
         self.clo2 = clo2 # Clo Expr
     
