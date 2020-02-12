@@ -115,10 +115,12 @@ def extend(atom, binderMap):
     """ Add atom to map of binders.
     """
     size = len(binderMap.a2i)
-    binderMap.a2i[atom] = size
-    binderMap.i2a[size] = atom
+    bmp = BinderMap(binderMap.a2i.copy(), binderMap.i2a.copy())
     
-    return binderMap
+    bmp.a2i[atom] = size
+    bmp.i2a[size] = atom
+    
+    return bmp
 
 # lookupAtom : Atom -> BinderMap -> Boundness
 def lookupAtom(atom, binderMap):
