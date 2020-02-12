@@ -4,17 +4,16 @@ from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 
-def test_runNuMachine():
-    sub = extendSubst(Var('X'), '3', extendSubst(Var('Y'), '2', dict([])))
-    nuM = State.unit(12142)
-    
-    assert runNuMachine(sub, nuM) == sub
-
 def test_bind():
     sub = extendSubst(Var('X'), '3', extendSubst(Var('Y'), '2', dict([])))
     
-    assert runNuMachine(sub, bind(Var('T'), 'Z')) == {'T':'Z', 'X':'3', 'Y':'2'}
-    assert runNuMachine(sub, bind(Var('X'), '4')) == {'X':'4', 'Y':'2'}
+    nm = NuMachine(sub)
+    nm.bind(Var('T'), 'Z')
+    assert nm.subst == {'T':'Z', 'X':'3', 'Y':'2'}
+    
+    nm = NuMachine(sub)
+    nm.bind(Var('X'), '4')
+    assert nm.subst == {'X':'4', 'Y':'2'}
 
 def test_stepNu():
     bm1 = extend("cool", extend("stuff", emptyBinderMap()))
@@ -35,133 +34,213 @@ def test_stepNu():
     cl2v = Closure(Var("stuff"), bm3)
     cl3v = Closure(Var("new"), bm2)
     
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl1s))) == dict([])
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl2s))) == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl1s, cl1s))
+    assert nm.subst == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl1s, cl2s))
+    assert nm.subst == dict([])
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl3s)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1s, cl3s))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl1c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1s, cl1c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl2c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1s, cl2c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl1n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1s, cl1n))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl2n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1s, cl2n))
         assert False
     except AAMismatchError:
         assert True
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl1v))) == {'stuff':'stuff'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl2v))) == {'stuff':'too'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1s, cl3v))) == {'new':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1s, cl1v))
+    assert nm.subst == {'stuff':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1s, cl2v))
+    assert nm.subst == {'stuff':'too'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1s, cl3v))
+    assert nm.subst == {'new':'stuff'}
     
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl2s))) == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl2s, cl2s))
+    assert nm.subst == dict([])
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl3s)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2s, cl3s))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl1c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2s, cl1c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl2c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2s, cl2c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl1n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2s, cl1n))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl2n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2s, cl2n))
         assert False
     except AAMismatchError:
         assert True
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl1v))) == {'stuff':'stuff'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl2v))) == {'stuff':'too'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2s, cl3v))) == {'new':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2s, cl1v))
+    assert nm.subst == {'stuff':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2s, cl2v))
+    assert nm.subst == {'stuff':'too'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2s, cl3v))
+    assert nm.subst == {'new':'stuff'}
 
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl3s))) == dict([])
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl1c))) == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl3s, cl3s))
+    assert nm.subst == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl3s, cl1c))
+    assert nm.subst == dict([])
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl2c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl3s, cl2c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl1n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl3s, cl1n))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl2n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl3s, cl2n))
         assert False
     except AAMismatchError:
         assert True
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl1v))) == {'stuff':'neat'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl2v))) == {'stuff':'stuff'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl3s, cl3v))) == {'new':'neat'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl3s, cl1v))
+    assert nm.subst == {'stuff':'neat'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl3s, cl2v))
+    assert nm.subst == {'stuff':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl3s, cl3v))
+    assert nm.subst == {'new':'neat'}
 
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl1c))) == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl1c, cl1c))
+    assert nm.subst == dict([])
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl2c)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1c, cl2c))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl1n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1c, cl1n))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl2n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl1c, cl2n))
         assert False
     except AAMismatchError:
         assert True
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl1v))) == {'stuff':'neat'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl2v))) == {'stuff':'stuff'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1c, cl3v))) == {'new':'neat'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1c, cl1v))
+    assert nm.subst == {'stuff':'neat'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1c, cl2v))
+    assert nm.subst == {'stuff':'stuff'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1c, cl3v))
+    assert nm.subst == {'new':'neat'}
 
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl2c))) == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl2c, cl2c))
+    assert nm.subst == dict([])
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl1n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2c, cl1n))
         assert False
     except AAMismatchError:
         assert True
     try:
-        runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl2n)))
+        nm = NuMachine()
+        nm.step(NuEquation(cl2c, cl2n))
         assert False
     except AAMismatchError:
         assert True
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl1v))) == {'stuff':'cool'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl2v))) == {'stuff':'cool'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2c, cl3v))) == {'new':'cool'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2c, cl1v))
+    assert nm.subst == {'stuff':'cool'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2c, cl2v))
+    assert nm.subst == {'stuff':'cool'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2c, cl3v))
+    assert nm.subst == {'new':'cool'}
 
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1n, cl1n))) == dict([])
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1n, cl2n))) == dict([])
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1n, cl1v))) == {'stuff':'new'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1n, cl2v))) == {'stuff':'new'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl1n, cl3v))) == {'new':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1n, cl1n))
+    assert nm.subst == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl1n, cl2n))
+    assert nm.subst == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl1n, cl1v))
+    assert nm.subst == {'stuff':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1n, cl2v))
+    assert nm.subst == {'stuff':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl1n, cl3v))
+    assert nm.subst == {'new':'new'}
 
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2n, cl2n))) == dict([])
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2n, cl1v))) == {'stuff':'new'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2n, cl2v))) == {'stuff':'new'}
-    assert runNuMachine(dict([]), stepNu(NuEquation(cl2n, cl3v))) == {'new':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2n, cl2n))
+    assert nm.subst == dict([])
+    nm = NuMachine()
+    nm.step(NuEquation(cl2n, cl1v))
+    assert nm.subst == {'stuff':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2n, cl2v))
+    assert nm.subst == {'stuff':'new'}
+    nm = NuMachine()
+    nm.step(NuEquation(cl2n, cl3v))
+    assert nm.subst == {'new':'new'}
 
 def test_evalNu():
     bm1 = extend("cool", extend("stuff", emptyBinderMap()))
@@ -184,4 +263,7 @@ def test_evalNu():
              NuEquation(cl2s, cl2v),
              NuEquation(cl1n, cl3v)]
     
-    assert runNuMachine(dict([]), evalNu(nprob)) == {"new":"new", "stuff":"too"}
+    nm = NuMachine()
+    nm.eval(nprob)
+    
+    assert nm.subst == {"new":"new", "stuff":"too"}

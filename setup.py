@@ -3,9 +3,7 @@ nominal-unification - a simple implementation of nominal unification.
 """
 import setuptools
 
-REQUIRED = [
-    "pymonad"
-]
+REQUIRED = []
 
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
@@ -18,7 +16,7 @@ with open("README.md", "r") as fh:
     long_description_content_type="text/markdown",
     url="https://github.com/AHartNtkn/nominal-unification",
     packages=setuptools.find_packages(),
-    python_requires=">=3.8",
+    python_requires=">=3.5",
     install_requires = REQUIRED,
     classifiers=["Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
