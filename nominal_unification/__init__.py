@@ -1,4 +1,3 @@
-from nominal_unification.Utils import *
 from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *

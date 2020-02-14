@@ -1,0 +1,59 @@
+from nominal_unification.Exceptions import *
+from nominal_unification.Syntax import *
+from nominal_unification.Constraints import *
+
+def test_partition():
+    assert partition(lambda x: x % 2 == 0, [1,2,3,4,5,6,7,8,9]) == ([2,4,6,8], [1,3,5,7,9])
+
+def test_occursInEq():
+    bm2 = extend("neat", extend("stuff", emptyBinderMap()))
+    bm3 = extend("neat", extend("stuff", extend("too", emptyBinderMap())))
+    
+    cl1v = Closure(Var("stuff"), bm2)
+    cl2v = Closure(Var("stuff"), bm3)
+    cl3v = Closure(Var("new"), bm2)
+    
+    eq1 = DeltaEquation(cl1v, cl1v)
+    eq2 = DeltaEquation(cl1v, cl2v)
+    eq3 = DeltaEquation(cl1v, cl3v)
+    eq4 = DeltaEquation(cl2v, cl2v)
+    eq5 = DeltaEquation(cl2v, cl3v)
+    eq6 = DeltaEquation(cl3v, cl3v)
+    
+    assert occursInEq(Var("stuff"), eq1) == True
+    assert occursInEq(Var("new"), eq1) == False
+    assert occursInEq(Var("stuff"), eq2) == True
+    assert occursInEq(Var("new"), eq2) == False
+    assert occursInEq(Var("stuff"), eq3) == True
+    assert occursInEq(Var("new"), eq3) == True
+    assert occursInEq(Var("stuff"), eq4) == True
+    assert occursInEq(Var("new"), eq4) == False
+    assert occursInEq(Var("stuff"), eq5) == True
+    assert occursInEq(Var("new"), eq5) == True
+    assert occursInEq(Var("stuff"), eq6) == False
+    assert occursInEq(Var("new"), eq6) == True
+
+def test_evalDelta():
+    #dp = [DeltaEquation(Closure(Var("X"), emptyBinderMap()),
+    #                    Closure(Var("Y"), emptyBinderMap()))]
+    #s2 = {"$X0":"d", "$X1":"y", "Y":App(Var("$X0"),Var("$X1"))}
+    #res1 = evalDelta(s2, dp, list(s2.keys()))
+    #resTest1 = 
+    # Should produce error
+    
+    #assert str(res1) == str(resTest1)
+    
+    dp = []
+    s2 = {"$X0":"d", "$X1":"y", "X":"x", "Y":App(Var("$X0"),Var("$X1"))}
+    res2 = evalDelta(s2, dp, list(s2.keys()))
+    resTest2 = ({"$X0":"d","$X1":"y","X":"x","Y":App(Var("$X0"), Var("$X1"))},[])
+    
+    assert str(res2) == str(resTest2)
+
+def test_pull():
+    # To Do
+    pass
+
+def test_findSubstClo():
+    # To Do
+    pass
