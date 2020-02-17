@@ -17,3 +17,11 @@ class TestUnift(unittest.TestCase):
         resTest1 = ({"$X0": "d", "$X1": "y", "X": "x", "Y": (Var("$X0"), Var("$X1"))}, [])
         
         assert res1 == resTest1
+
+        expr1 = ((Var("X"), "y"), Var("Z"), "w")
+        expr2 = (("x", Var("Y")), "z", Var("W"))
+
+        res2 = unify(expr1, expr2)
+        resTest2 = ({'W': 'w', 'X': 'x', 'Y': 'y', 'Z': 'z'}, [])
+
+        assert res2 == resTest2
