@@ -235,3 +235,39 @@ class TestRhoMachines(unittest.TestCase):
          )
         
         assert str(res2) == str(resTest2)
+        
+        l = (Var("X"), Abs("z", "x"))
+        r = (Var("Y"), Abs("y", Var("Y")))
+
+        rm = RhoMachine()
+        rm.eval([MultiEquation(Closure(l, emptyScope()),
+                               Closure(r, emptyScope()))])
+        
+        res3 = (rm.p, rm.d, rm.s)
+        resTest3 = (
+            [NuEquation(Closure("x", Scope({"z":0}, {0:"z"})),
+                        Closure(Var("Y"), Scope({"y":0}, {0:"y"})))],
+            [DeltaEquation(Closure(Var("X"), emptyScope()),
+                           Closure(Var("Y"), emptyScope()))],
+            {}
+        )
+        
+        assert str(res3) == str(resTest3)
+        
+        l = (Var("X"), Abs("z", "x"))
+        r = (Var("Y"), Abs("y", Var("Y")))
+
+        rm = RhoMachine()
+        rm.eval([MultiEquation(Closure(r, emptyScope()),
+                               Closure(l, emptyScope()))])
+        
+        res4 = (rm.p, rm.d, rm.s)
+        resTest4 = (
+            [NuEquation(Closure("x", Scope({"z":0}, {0:"z"})),
+                        Closure(Var("Y"), Scope({"y":0}, {0:"y"})))],
+            [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                           Closure(Var("X"), emptyScope()))],
+            {}
+        )
+        
+        assert str(res4) == str(resTest4)

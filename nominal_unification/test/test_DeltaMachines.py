@@ -50,11 +50,31 @@ class TestDeltaMachines(unittest.TestCase):
         resTest2 = ({"$X0":"d","$X1":"y","X":"x","Y":(Var("$X0"), Var("$X1"))},[])
         
         assert str(res2) == str(resTest2)
+        
+        s = {'Y': 'x'}
+        d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                           Closure(Var("X"), emptyScope()))]
+        
+        res3 = evalDelta(s, d, list(map(Var, s.keys())))
+        resTest3 = ({"X":"x", "Y":"x"},[])
+        
+        assert res3 == resTest3
+        
+        s = {'Y': 'x'}
+        d = [DeltaEquation(Closure(Var("X"), emptyScope()),
+                           Closure(Var("Y"), emptyScope()))]
+        
+        res4 = evalDelta(s, d, list(map(Var, s.keys())))
+        resTest4 = ({"X":"x", "Y":"x"}, [])
+        
+        assert res4 == resTest4
 
     def test_pull(self):
-        # To Do
-        pass
-
-    def test_findSubstClo(self):
-        # To Do
-        pass
+        s = {'Y': 'x'}
+        d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                           Closure(Var("X"), emptyScope()))]
+        
+        res1 = pull(s, [], d)
+        resTest1 = ({"X":"x", "Y":"x"}, [Var("X")])
+        
+        assert res1 == resTest1

@@ -25,3 +25,16 @@ class TestUnift(unittest.TestCase):
         resTest2 = ({'W': 'w', 'X': 'x', 'Y': 'y', 'Z': 'z'}, [])
 
         assert res2 == resTest2
+        
+        expr1 = (Var("X"), Abs("z", "x"))
+        expr2 = (Var("Y"), Abs("y", Var("Y")))
+
+        res3 = unify(expr1, expr2)
+        resTest3 = ({'X': 'x', 'Y': 'x'}, [])
+        
+        assert res3 == resTest3
+        
+        res4 = unify(expr2, expr1)
+        resTest4 = ({'X': 'x', 'Y': 'x'}, [])
+        
+        assert res4 == resTest4

@@ -280,3 +280,12 @@ class TestNuMachines(unittest.TestCase):
         nu = NuMachine(s1)
         nu.eval(np)
         assert nu.subst == {"$X0":"d", "$X1":"y", "X":"x", "Y":(Var("$X0"),Var("$X1"))}
+        
+        s1 = {}
+        np = [NuEquation(Closure("x", Scope({"z":0}, {0:"z"})),
+                         Closure(Var("Y"), Scope({"y":0}, {0:"y"})))]
+        
+        nu = NuMachine(s1)
+        nu.eval(np)
+        assert nu.subst == {"Y":"x"}
+

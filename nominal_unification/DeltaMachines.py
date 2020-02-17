@@ -36,7 +36,7 @@ def pull(s0, xs0, pp):
         Phi1 = clo1.scope
         
         clo2 = pp[0].clo2
-        X2 = clo1.expr
+        X2 = clo2.expr
         Phi2 = clo2.scope
         
         p = pp[1:]
@@ -77,11 +77,12 @@ def pull(s0, xs0, pp):
                     a2 = lookupName(a1, Phi2)
                     if type(a2) != Free:
                         raise NameCaptureError(str(a1) + "\n" + str(Phi1))
+                    a2 = a2.string
                 elif type(res) == Bound:
                     a2 = lookupIdx(res.index, Phi2)
                 
                 xs0p = xs0.copy()
-                xs0p.insert(X2, 0)
+                xs0p.insert(0, X2)
                 
                 return pull(extendSubst(X2, a2, s0), xs0p, p)
             
@@ -91,7 +92,7 @@ def pull(s0, xs0, pp):
                 
                 return pull(s0, xs0, pp)
                 
-        raise Exception(str(a1) + " failed to unify with " + str(a2))
+        raise Exception(str(clo1) + " failed to unify with " + str(clo2))
 
 def evalDelta(s0, d0, xs):
     """ Delta machine evaluation. This computes the final unifier
@@ -138,3 +139,4 @@ def evalDelta(s0, d0, xs):
         sp0, xs1 = pull(s0, xs0, d0X)
         
         return evalDelta(sp0, d0wod0X, xs1)
+
