@@ -78,3 +78,41 @@ class TestDeltaMachines(unittest.TestCase):
         resTest1 = ({"X":"x", "Y":"x"}, [Var("X")])
         
         assert res1 == resTest1
+
+        s = {'Y': 'x', 'X':'x'}
+        d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                           Closure(Var("X"), emptyScope()))]
+        
+        res2 = pull(s, [], d)
+        resTest2 = ({"X":"x", "Y":"x"}, [])
+        
+        assert res2 == resTest2
+
+        s = {'X': 'x'}
+        d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                           Closure(Var("X"), emptyScope()))]
+        
+        res3 = pull(s, [], d)
+        resTest3 = ({"X":"x", "Y":"x"}, [Var("Y")])
+        
+        assert res3 == resTest3
+
+        try:
+            s = {}
+            d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                               Closure(Var("X"), emptyScope()))]
+            
+            pull(s, [], d)
+            assert False
+        except Exception:
+            assert True
+
+        try:
+            s = {"X":"x", "Y":"y"}
+            d = [DeltaEquation(Closure(Var("Y"), emptyScope()),
+                               Closure(Var("X"), emptyScope()))]
+            
+            pull(s, [], d)
+            assert False
+        except NNMismatchError:
+            assert True
