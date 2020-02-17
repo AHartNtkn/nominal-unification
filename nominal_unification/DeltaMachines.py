@@ -2,71 +2,139 @@ from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 
-# Delta Machines : a (it's simply a wrapper)
-def partition(f, x):
-    return (list(filter(f, x)), list(filter(lambda z: not f(z), x)))
-
-# occursInEq : Var -> DeltaEquation -> Bool
 def occursInEq(var, deq):
-    return (var == deq.clo1.av) or (var == deq.clo2.av)
+    """ Detects if a variable appears within a delta equation.
+    """
+    return (var == deq.clo1.expr) or (var == deq.clo2.expr)
 
-# evalDelta : Substitution -> DeltaProblem -> [Var] -> DeltaMachine (Substitution, DeltaProblem)
-def evalDelta(s, p, xs):
-    if len(xs) == 0:
-        return (s, p)
-    elif len(p) == 0:
-        return (s, p)
-    else:
-        w, wo = partition(lambda z: occursInEq(xs[0], z), p)
-        sp, xsp = pull(s, xs[1:], w)
-        return evalDelta(sp, wo, xsp)
-
-# pull : Substitution -> [Var] -> DeltaProblem -> DeltaMachine (Substitution, [Var])
-def pull(s, xs, p):
-    if len(p) == 0:
-        return (s, xs)
-    else:
-        x1 = p[0].clo1.av
-        bm1 = p[0].clo1.binderMap
-        x2 = p[0].clo2.av
-        bm2 = p[0].clo2.binderMap
-        pp = p[1:]
-        
-        x1p = subst(x1, s)
-        x2p = subst(x2, s)
-        
-        if isName(x1p):
-            if isName(x2p):
-                if not sameClo(p[0].clo1, p[0].clo2):
-                    raise AAMismatchError(str(p[0].clo1) + "\n" + str(p[0].clo2))
-
-                return pull(s, xs, pp)
-            elif type(x2p) == Var:
-                sp = findSubstClo(s, x2p, bm2, Closure(a1, bm1))
-                xsc = xs.copy()
-                xsc.insert(0, x2p)
-                return pull(sp, xsc, pp)
-        elif type(x1p) == Var:
-            if isName(x2p):
-                sp = findSubstClo(s, x1p, bm1, Closure(a2, bm2))
-                xsc = xs.copy()
-                xsc.insert(0, x1p)
-                return pull(sp, xsc, pp)
-    raise Exception(str(x1p) ++ " failed to unify with " ++ str(x2p))
-
-# findSubstClo : Substitution -> Var -> BinderMap -> Clo Atom -> DeltaMachine Substitution
-def findSubstClo(s, x, bmx, clo):
-    a = clo.av
-    bma = clo.binderMap
+def pull(s0, xs0, pp):
+    """ The pull operation for a delta machine.
     
-    res1 = lookupAtom(a, bma)
-    if type(res1) == Free:
-        res2 = lookupAtom(a, bmx)
-        if type(res2) == Free:
-            return extendSubst(x, a, s)
-        else:
-            raise NameCaptureError(str(a) + "\n" + str(bmx))
-    elif type(res1) == Bound:
-        i = res1.index
-        res2 = lookupIdx(i, bmx)
-        return extendSubst(x, res2, s)
+        Given a substitution, a list of known variables, and a
+        delta problem (list of var-var equational constraints),
+        the pull operation will solve the contraints to produce
+        a new substitution and new list of variables.
+        
+        In the original white-paper, this is denoted by the
+        judgement, σ0 ; xs0 ⊦ δ ⇒pull σ1 ; xs1, where
+        σ0 is an input substitution, xs0 is an input list
+        of known variables, δ is an input list of delta
+        problems, σ1 is an ouput substitution, and xs1 is an
+        output list of known variables.
+        
+        See [Empty], [N-N], and [N-V] in Figure 6
+    """
+    if len(pp) == 0:
+        # [Empty] Figure 6
+        #
+        # --------------------
+        # σ;xs ⊦ ϵ ⇒pull σ;xs
+        return (s0, xs0)
+    else:
+        clo1 = pp[0].clo1
+        X1 = clo1.expr
+        Phi1 = clo1.scope
+        
+        clo2 = pp[0].clo2
+        X2 = clo1.expr
+        Phi2 = clo2.scope
+        
+        p = pp[1:]
+        
+        if X1.string in s0:
+            if X2.string in s0:
+                # [N-N] Figure 6
+                #〈a1; Φ1〉≈〈a2; Φ2〉
+                # σ0(X1) = a1
+                # σ0(X2) = a2
+                # σ0; xs0 ⊦ p ⇒pull σ1; xs1
+                # -----------------------------------------------
+                # σ0; xs0 ⊦〈X1; Φ1〉=〈X2; Φ2〉, p ⇒pull σ1; xs1
+                
+                a1 = s0[X1.string]
+                a2 = s0[X2.string]
+                
+                if not alphaEq(Closure(a1, Phi1), Closure(a2, Phi2)):
+                    raise NNMismatchError(str(Closure(a1, Phi1)) + "\n" + str(Closure(a2, Phi2)))
+
+                return pull(s0, xs0, p)
+                
+            else:
+                # [N-V] Figure 6
+                #〈a1; Φ1〉≈〈a2; Φ2〉
+                # σ0(X1) = a1
+                # X2 ∉ dom(σ0)
+                # {X2/a2} ∪ σ0; (X2 :: xs0) ⊦ p ⇒pull σ1; xs1
+                # ------------------------------------------------
+                # σ0; xs0 ⊦ 〈X1; Φ1〉=〈X2; Φ2〉, p ⇒pull σ1; xs1
+                
+                a1 = s0[X1.string]
+                
+                # Find an appropriate a2.
+                # Is there's a better way to do this?
+                res = lookupName(a1, Phi1)
+                if type(res) == Free:
+                    a2 = lookupName(a1, Phi2)
+                    if type(a2) != Free:
+                        raise NameCaptureError(str(a1) + "\n" + str(Phi1))
+                elif type(res) == Bound:
+                    a2 = lookupIdx(res.index, Phi2)
+                
+                xs0p = xs0.copy()
+                xs0p.insert(X2, 0)
+                
+                return pull(extendSubst(X2, a2, s0), xs0p, p)
+            
+        elif X2.string in s0:
+                # In the case that the first closure has a variable, reverse the equation.
+                pp[0] = DeltaEquation(clo2, clo1)
+                
+                return pull(s0, xs0, pp)
+                
+        raise Exception(str(a1) + " failed to unify with " + str(a2))
+
+def evalDelta(s0, d0, xs):
+    """ Delta machine evaluation. This computes the final unifier
+        on  three  inputs:  the  substitution  resulting from a
+        nu machine, a delta problem (list of var-var equational
+        constraints), and  a  list  of known variables, assumed
+        to be the domain/keys of the substitution initially.
+        
+        In the original white-paper, this is denoted by the
+        judgement, σ0 ; δ0 ⊦ xs ⇒δ σ1 ; δ1, where σ0 is an
+        input substitution, δ0 is an input delta problem, xs
+        is an input list of known variables, σ1 is an output
+        substitution, and δ1 is an output delta problem.
+        
+        See [Empty-Xs], [Empty-D], and [Pull] in Figure 6.
+    """
+    if len(xs) == 0:
+        # [Empty-Xs] Figure 6
+        #
+        # ---------------
+        # σ;δ ⊦ ϵ ⇒δ σ;δ
+        return (s0, d0)
+    elif len(d0) == 0:
+        # [Empty-D] Figure 6
+        #
+        # ----------------
+        # σ;ϵ ⊦ xs ⇒δ σ;ϵ
+        return (s0, d0)
+    else:
+        # [Pull] Figure 6
+        # σ0 ; xs0 ⊦ δ0(X) ⇒pull σ'0 ; xs1
+        # σ'0 ; δ0\δ0(X) ⊦ xs1 ⇒δ σ1 ; δ1
+        # ---------------------------------
+        # σ0 ; δ0 ⊦ X :: xs0 ⇒δ σ1 ; δ1
+        
+        X = xs[0]
+        xs0 = xs[1:]
+        
+        # δ0(X)
+        d0X = [ z for z in d0 if occursInEq(X, z) ]
+        # δ0\δ0(X)
+        d0wod0X = [ z for z in d0 if not occursInEq(X, z) ]
+        
+        sp0, xs1 = pull(s0, xs0, d0X)
+        
+        return evalDelta(sp0, d0wod0X, xs1)

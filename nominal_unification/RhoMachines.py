@@ -3,16 +3,20 @@ from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 
 class RhoMachine():
-    def __init__(self, np=None, dp=None, s=None, fresh=None):
-        if np is None:
-            self.np = []
+    """ A rho machine exists to proccess a list of multi-equations
+        into a list of nu (name-name and name-var) and delta
+        (var-var) problems from two full expressions.
+    """
+    def __init__(self, p=None, d=None, s=None, fresh=None):
+        if p is None:
+            self.p = []
         else:
-            self.np = np
+            self.p = p
         
-        if dp is None:
-            self.dp = []
+        if d is None:
+            self.d = []
         else:
-            self.dp = dp
+            self.d = d
         
         if s is None:
             self.s = dict([])
@@ -24,83 +28,209 @@ class RhoMachine():
         else:
             self.fresh = fresh
 
-    def freshVar(self):
+    def newVar(self):
+        """ Generate a fresh variable.
+        """
         v = Var("$X" + str(self.fresh))
         self.fresh += 1
         return v
     
-    def freshAtom(self):
+    def newName(self):
+        """ Generate a fresh name.
+        """
         a = "$a" + str(self.fresh)
         self.fresh += 1
         return a
     
     def step(self, m):
-        cl = m.clo1
-        cr = m.clo2
-        el = cl.av
-        bml = cl.binderMap
-        er = cr.av
-        bmr = cr.binderMap
+        """ Given a  single multi-equations, proccess it into a 
+            nu problem, a delta problem, and a substitution.
+            
+            In the original white paper, this operation is denoted
+            by the judgement ν0; δ0; σ0 ⊦ e ⇒s ν1; δ1; σ1, where 
+            ν0 is an input nu problem, δ0 is an input delta problem,
+            σ0 is an input substitution, e is an input multi-equation,
+            ν1 is an output nu problem, δ1 is an output delta problem,
+            and σ1 is an output substitution.
+            
+            See [N-N], [N-V], [V-V], [C-C], [A-A], [V-C], [V-A],
+            [V-A'] in Figure 8.
+        """
+        clo1 = m.clo1
+        clo2 = m.clo2
+        el = clo1.expr
+        Phi1 = clo1.scope
+        er = clo2.expr
+        Phi2 = clo2.scope
         
-        if type(el) == str or type(el) == int:
-            if type(er) == str or type(er) == int:
-                self.np.insert(0, NuEquation(Closure(el, bml), Closure(er, bmr)))
+        if isName(el):
+            if isName(er):
+                # [N-N] Figure 8
+                # p1 = (〈a1; Φ1〉≈NN〈a2; Φ2〉) ∪ p0
+                # -------------------------------------------------
+                # p0; δ0; σ0 ⊦ (〈a1; Φ1〉≈EE〈a2; Φ2〉) ⇒s p1; δ0; σ0
+                
+                a1 = el
+                a2 = er
+
+                self.p.insert(0, NuEquation(Closure(a1, Phi1), Closure(a2, Phi2)))
             elif type(er) == Var:
-                self.np.insert(0, NuEquation(Closure(el, bml), Closure(er, bmr)))
-            elif type(er) == App:
-                raise EEMismatchError(str(cl) + "\n" + str(cr))
+                # [N-V] Figure 8
+                # p1 = (〈a1; Φ1〉≈NV〈X2; Φ2〉) ∪ p0
+                # -------------------------------------------------
+                # p0; δ0; σ0 ⊦ (〈a1; Φ1〉≈EE〈X2; Φ2〉) ⇒s p1; δ0; σ0
+                
+                a1 = el
+                X2 = er
+                
+                self.p.insert(0, NuEquation(Closure(a1, Phi1), Closure(X2, Phi2)))
+            elif type(er) == tuple:
+                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
             elif type(er) == Abs:
-                raise EEMismatchError(str(cl) + "\n" + str(cr))
+                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
             else:
                 raise Exception(str(er) + 'is not an expression')
         elif type(el) == Var:
-            if type(er) == str or type(er) == int:
-                self.step(MultiEquation(cr, cl))
+            if isName(er):
+                self.step(MultiEquation(clo2, clo1))
             elif type(er) == Var:
-                self.dp.insert(0, DeltaEquation(Closure(el, bml), Closure(er, bmr)))
-            elif type(er) == App:
-                v1 = self.freshVar()
-                v2 = self.freshVar()
-                self.s = extendSubst(el, App(v1, v2), self.s)
-                self.step(MultiEquation(Closure(v1, bml), Closure(er.expr1, bmr)))
-                self.step(MultiEquation(Closure(v2, bml), Closure(er.expr2, bmr)))
+                # [V-V] Figure 8
+                # δ1 = (〈X1; Φ1〉≈VV〈X2; Φ2〉) ∪ δ0
+                # ----------------------------------------------------
+                # p0; δ0; σ0 ⊦ (〈X1; Φ1〉≈EE〈X2; Φ2〉) ⇒s p0; δ1; σ0
+                
+                X1 = el
+                X2 = er
+                
+                self.d.insert(0, DeltaEquation(Closure(X1, Phi1), Closure(X2, Phi2)))
+            elif type(er) == tuple:
+                # [V-C] Figure 8
+                # X0 = (new-var) ... Xi = (new-var)
+                # p0; δ0; {Y/(X0...Xi)} ∪ σ0 ⊦ (〈X0; Φ1〉≈EE〈a0; Φ2〉) ⇒s p1; δ1; σ1
+                # p1; δ1; σ1 ⊦ (〈X1; Φ1〉≈EE〈a1; Φ2〉) ⇒s p2; δ2; σ2
+                # p2; δ2; σ2 ⊦ ...
+                # pi; δi; σi ⊦ (〈Xi; Φ1〉≈EE〈ai; Φ2〉) ⇒s pi'; δi'; σi'
+                # -------------------------------------------------------------
+                # p0; δ0; σ0 ⊦ (〈Y; Φ1〉≈EE〈(a0...ai); Φ2〉) ⇒s pi'; δi'; σi'
+                
+                Y = el
+                a = er
+                
+                X = [self.newVar() for _ in er]
+                
+                self.s[Y.string] = tuple(X)
+                
+                for Xi, ai in zip(X, a):
+                    self.step(MultiEquation(Closure(Xi, Phi1), Closure(ai, Phi2)))
             elif type(er) == Abs:
-                al = self.freshAtom()
-                vb = self.freshVar()
-                self.s = extendSubst(el, Abs(al, vb), self.s)
-                bmlp = extend(al, bml)
-                bmrp = extend(er.string, bmr)
-                self.step(MultiEquation(Closure(vb, bmlp), Closure(er.expr, bmrp)))
+                X1 = el
+                
+                a2 = er.string
+                t2 = er.expr
+                
+                res = lookupName(a2, Phi1)
+                if type(res) == Free:
+                    # [V-A] Figure 8
+                    # Φ1 ⊦ Fr a2
+                    # a1 = (new-name)
+                    # Xt = (new-var)
+                    # Φ1' = (ext Φ1 a1)
+                    # Φ2' = (ext Φ2 a2)
+                    # p0; δ0; {X1/λa1.Xt} ∪ σ0 ⊦ (〈Xt; Φ1'〉≈EE〈t2; Φ2'〉) ⇒s p1; δ1; σ1
+                    # --------------------------------------------------------------------
+                    # p0;δ0;σ0`(〈X1; Φ1〉≈EE〈λa2.t2; Φ2〉) ⇒s p1; δ1; σ1
+                    
+                    a1 = self.newName()
+                    Xt = self.newVar()
+                    Phi1p = extend(a1, Phi1)
+                    Phi2p = extend(a2, Phi2)
+                    
+                    self.s[X1.string] = Abs(a1, Xt)
+                    
+                    self.step(MultiEquation(Closure(Xt, Phi1p), Closure(t2, Phi2p)))
+                    
+                elif type(res) == Bound:
+                    # [V-A'] Figure 8
+                    # Φ1 ⊦ Bd a1 i
+                    # Φ2 ⊦ Bd a2 i
+                    # Xt = (new-var)
+                    # Φ1' = (ext Φ1 a1)
+                    # Φ2' = (ext Φ2 a2)
+                    # p0; δ0; {X1/λa1.Xt} ∪ σ0 ⊦ (〈Xt; Φ1'〉≈EE〈t2; Φ2'〉) ⇒s p1; δ1; σ1
+                    # --------------------------------------------------------------------
+                    # p0; δ0; σ0 ⊦ (〈X1; Φ1〉≈EE〈λa2.t2; Φ2〉) ⇒s p1; δ1; σ1
+                    
+                    a1 = self.newName()
+                    a2 = Phi2.i2a.get(res.index, -1)
+                    
+                    if a2 == -1:
+                        raise Exception("Scopes within expressions " + str(clo1) + " and " + str(clo2) + " have inequal length.")
+                    
+                    Xt = self.newVar()
+                    
+                    Phi1p = extend(a1, Phi1)
+                    Phi2p = extend(a2, Phi2)
+                    
+                    self.s[X1.string] = Abs(a1, Xt)
+                    
+                    self.step(MultiEquation(Closure(Xt, Phi1p), Closure(t2, Phi2p)))
             else:
                 raise Exception(str(er) + 'is not an expression')
-        elif type(el) == App:
-            if type(er) == str or type(er) == int:
-                raise EEMismatchError(str(cl) + "\n" + str(cr))
+        elif type(el) == tuple:
+            if isName(er):
+                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
             elif type(er) == Var:
-                self.step(MultiEquation(cr, cl))
-            elif type(er) == App:
-                self.step(MultiEquation(Closure(el.expr1, bml), Closure(er.expr1, bmr)))
-                self.step(MultiEquation(Closure(el.expr2, bml), Closure(er.expr2, bmr)))
+                self.step(MultiEquation(clo2, clo1))
+            elif type(er) == tuple:
+                # [C-C] Figure 8
+                # p0; δ0; σ0 ⊦ (〈l0; Φ1〉〈r0; Φ2〉) ⇒s p1; δ1; σ1
+                # p1; δ1; σ1 ⊦ (〈l1; Φ1〉〈r1; Φ2〉) ⇒s p2; δ2; σ2
+                # p2; δ2; σ2 ⊦ ...
+                # pi; δi; σi ⊦ (〈li; Φ1〉〈ri; Φ2〉) ⇒s pi'; δi'; σi'
+                # -----------------------------------------------------------------
+                # p0; δ0; σ0 ⊦ (〈(li...); Φ1〉≈EE〈(ri...); Φ2〉) ⇒s pi'; δi'; σi'
+                
+                if len(el) != len(er):
+                    raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                    
+                for li, ri in zip(el, er):
+                    self.step(MultiEquation(Closure(li, Phi1), Closure(ri, Phi2)))
             elif type(er) == Abs:
-                raise EEMismatchError(str(cl) + "\n" + str(cr))
+                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
             else:
                 raise Exception(str(er) + 'is not an expression')
         elif type(el) == Abs:
-            if type(er) == str or type(er) == int:
-                raise EEMismatchError(cl, cr)
+            if isName(er):
+                raise EEMismatchError(clo1, clo2)
             elif type(er) == Var:
-                self.step(MultiEquation(cr, cl))
-            elif type(er) == App:
-                raise EEMismatchError(str(cl) + "\n" + str(cr))
+                self.step(MultiEquation(clo2, clo1))
+            elif type(er) == tuple:
+                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
             elif type(er) == Abs:
-                bmlp = extend(el.string, bml)
-                bmrp = extend(er.string, bmr)
-                self.step(MultiEquation(Closure(el.expr, bmlp), Closure(er.expr, bmrp)))
+                # [A-A] Figure 8
+                # Φ1' = (ext Φ1 a1)
+                # Φ2' = (ext Φ2 a2)
+                # p0; δ0;σ0 ⊦ (〈t1; Φ1'〉≈EE〈t2; Φ2'〉) ⇒s p1; δ1; σ
+                # ---------------------------------------------------------
+                # p0;δ0;σ0 ⊦ (〈λa1.t1; Φ1〉≈EE〈λa2.t2; Φ2〉)⇒s p1; δ1; σ1
+
+                a1 = el.string
+                t1 = el.expr
+                
+                a2 = er.string
+                t2 = er.expr
+
+                Phi1p = extend(a1, Phi1)
+                Phi2p = extend(a2, Phi2)
+                
+                self.step(MultiEquation(Closure(t1, Phi1p), Closure(t2, Phi2p)))
             else:
                 raise Exception(str(er) + 'is not an expression')
         else:
             raise Exception(str(el) + 'is not an expression')
     
     def eval(self, rp):
+        """ Evaluate a list of multi-equations using.
+        """
         for eq in rp:
             self.step(eq)

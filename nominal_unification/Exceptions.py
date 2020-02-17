@@ -1,5 +1,5 @@
 # Unification related exceptions.
-class AAMismatchError(Exception): # (Clo Atom) (Clo Atom)
+class NNMismatchError(Exception): # (Clo Atom) (Clo Atom)
    """Raised when ..."""
    pass
 

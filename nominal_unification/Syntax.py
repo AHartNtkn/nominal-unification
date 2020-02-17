@@ -1,11 +1,15 @@
 from nominal_unification.Exceptions import *
 
-# Define basic syntax terms.
-
-# Expressions, made up of atoms, variables, applications, and abstractions.
-# An atom is just a string.
+def isName(x):
+    """ Check if input is a valid names.
+    
+        Names should consist of any constant, e.g. strings or integers.
+    """
+    return type(x) == str or type(x) == int
 
 class Var():
+    """ Metavariables used for unification.
+    """
     def __init__(self, string):
         self.string = string
 
@@ -21,30 +25,19 @@ class Var():
     
     def __hash__(self):
         return hash((type(self), self.string))
-    
-
-class App():
-    def __init__(self, expr1, expr2):
-        self.expr1 = expr1
-        self.expr2 = expr2
-
-    def __str__(self):
-        return "App(" + str(self.expr1) + ", " + str(self.expr2) + ")"
-    __repr__ = __str__
-
-    def __eq__(self, other):
-        return type(self) == type(other) and self.expr1 == other.expr1 and self.expr2 == other.expr2
-    
-    def __hash__(self):
-        return hash((type(self), self.expr1, self.expr2))
 
 class Abs():
+    """ RepresentsAbstractions used to indicate when a variable is being
+        bound. For example, we might represent a lamdba expression
+        "lam x . f x" as ("lam", Abs(x, f(x)), or a universal
+        quantification (forall x . P(x)) as ("all", Abs(x, P(x))).
+    """
     def __init__(self, string, expr):
         self.string = string
         self.expr = expr
 
     def __str__(self):
-        return "Abs(" + str(self.string) + ", " + str(self.expr) + ")"
+        return "(" + str(self.string) + " . " + str(self.expr) + ")"
     __repr__ = __str__
 
     def __eq__(self, other):
@@ -53,31 +46,11 @@ class Abs():
     def __hash__(self):
         return hash((type(self), self.expr1, self.expr2))
 
-# expElim : Expr -> (String -> a) -> (String -> a) -> (Expr -> Expr -> a) -> 
-def expElim(expr, atomElim, varElim, appElim, absElim):
-    if type(expr) == str or type(expr) == int:
-        return atomElim(expr)
-    elif type(expr) == Var:
-        return varElim(expr.string)
-    elif type(expr) == App:
-        return appElim(expr.expr1, expr.expr2)
-    elif type(expr) == Abs:
-        return absElim(expr.string, expr.expr)
-    else:
-        raise Exception(str(expr) + 'is not an expression')
-
-# Equations
-class Eq():
-    def __init__(self, expr1, expr2):
-        self.expr1 = expr1
-        self.expr2 = expr2
-
-    def __str__(self):
-        return "(" + str(self.expr1) + " = " + str(self.expr2) + ")"
-    __repr__ = __str__
-
 # Bound and free terms
 class Bound():
+    """ Represents a bound term. When a variable "x" is bound by the most recent
+        abstraction it will be cast as Bound("x", 0), for example.
+    """
     def __init__(self, string, index):
         self.string = string
         self.index = index
@@ -90,6 +63,9 @@ class Bound():
         return type(self) == type(other) and self.string == other.string and self.index == other.index
 
 class Free():
+    """ Represents a free variable. Comes up in contexts
+        where variables might be bound.
+    """
     def __init__(self, string):
         self.string = string
 
@@ -101,45 +77,73 @@ class Free():
         return type(self) == type(other) and self.string == other.string
 
 # Maps of binders.
-class BinderMap():
-    def __init__(self, a2i, i2a):
-        self.a2i = a2i # Dict Atom Int
-        self.i2a = i2a # Dict Int Atom
+class Scope():
+    """ A scope is a list of bound variables, denoting mappings
+        from variables to indices, and from indices back into
+        variables.
+    """
+    def __init__(self, n2i, i2n):
+        self.n2i = n2i # Dict Name Int
+        self.i2n = i2n # Dict Int Name
 
     def __str__(self):
-        return "BM(" + str(self.a2i) + ", " + str(self.i2a) + ")"
+        return "S(" + str(self.n2i) + ", " + str(self.i2n) + ")"
     __repr__ = __str__
 
-# extend : Atom -> BinderMap -> BinderMap
-def extend(atom, binderMap):
-    """ Add atom to map of binders.
+# extend : Name -> Scope -> Scope
+def extend(name, scope):
+    """ Add a name to a scope.
     """
-    size = len(binderMap.a2i)
-    bmp = BinderMap(binderMap.a2i.copy(), binderMap.i2a.copy())
+    size = len(scope.n2i)
+    bmp = Scope(scope.n2i.copy(), scope.i2n.copy())
     
-    bmp.a2i[atom] = size
-    bmp.i2a[size] = atom
+    bmp.n2i[name] = size
+    bmp.i2n[size] = name
     
     return bmp
 
-# lookupAtom : Atom -> BinderMap -> Boundness
-def lookupAtom(atom, binderMap):
-    index = binderMap.a2i.get(atom, -1)
+# lookupName : Name -> Scope -> Boundness
+def lookupName(name, scope):
+    """ Given a scope, try finding an name in that scope.
+        If the name is bound, it's cast as a bound variable,
+        if it's not bound it's cast as a free variable.
+        
+        See [Free] and [Bound] in Figure 1.
+    """
     
+    # [Free] Figure 2
+    # a ∉ Φ
+    # --------
+    # Φ ⊦ Fr a
+    index = scope.n2i.get(name, -1)
     if index == -1:
-        return Free(atom)
+        return Free(name)
     
-    return Bound(atom, index)
+    # [Bound] Figure 2
+    # (Φ.n2i[a]) = i
+    # (Φ.i2n[i]) = a
+    # --------------
+    # Φ ⊦ Bd a i
+    if scope.i2n[index] == name:
+        return Bound(name, index)
+    
+    raise Exception("Scope " + str(scope) + " is not well-formed.")
 
-# lookupIdx : Int -> BinderMap -> Maybe Atom
-def lookupIdx(index, binderMap):
-    # j = len(binderMap.a2i) - index
-    a = binderMap.i2a.get(index, -1)
-    indexp = binderMap.a2i.get(a, -2)
+# lookupIdx : Int -> Scope -> Maybe Name
+def lookupIdx(index, scope):
+    """ Given an index and a scope, attempt to
+        find the name matching that scope.
+        
+        takes an integer index and a scope as input.
+    """
+    a = scope.i2n.get(index, -1)
+    indexp = scope.n2i.get(a, -2)
     if index == indexp:
         return a
     
-    raise NoMatchingBinderError(str(index) + "\n" + str(binderMap))
+    raise NoMatchingBinderError(str(index) + "\n" + str(scope))
 
-def emptyBinderMap():
-    return BinderMap(dict([]), dict([]))
+def emptyScope():
+    """ Generate a scope without any bindings.
+    """
+    return Scope(dict([]), dict([]))
