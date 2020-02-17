@@ -16,4 +16,4 @@ def unify(l, r):
     nu = NuMachine(rm.s)
     nu.eval(rm.p)
     
-    return evalDelta(nu.subst, rm.d, list(nu.subst.keys()))
+    return evalDelta(nu.subst, rm.d, list(map(Var, nu.subst.keys())))

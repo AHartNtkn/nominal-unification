@@ -35,18 +35,18 @@ class TestDeltaMachines(unittest.TestCase):
         assert occursInEq(Var("new"), eq6) == True
 
     def test_evalDelta(self):
-        #dp = [DeltaEquation(Closure(Var("X"), emptyScope()),
-        #                    Closure(Var("Y"), emptyScope()))]
-        #s2 = {"$X0":"d", "$X1":"y", "Y":(Var("$X0"),Var("$X1"))}
-        #res1 = evalDelta(s2, dp, list(s2.keys()))
-        #resTest1 = 
-        # Should produce error
-        
-        #assert str(res1) == str(resTest1)
+        dp = [DeltaEquation(Closure(Var("X"), emptyScope()),
+                            Closure(Var("Y"), emptyScope()))]
+        s2 = {"$X0":"d", "$X1":"y", "Y":(Var("$X0"),Var("$X1"))}
+        try:
+            evalDelta(s2, dp, list(map(Var, s2.keys())))
+            assert False
+        except Exception:
+            assert True
         
         dp = []
         s2 = {"$X0":"d", "$X1":"y", "X":"x", "Y":(Var("$X0"),Var("$X1"))}
-        res2 = evalDelta(s2, dp, list(s2.keys()))
+        res2 = evalDelta(s2, dp, list(map(Var, s2.keys())))
         resTest2 = ({"$X0":"d","$X1":"y","X":"x","Y":(Var("$X0"), Var("$X1"))},[])
         
         assert str(res2) == str(resTest2)
