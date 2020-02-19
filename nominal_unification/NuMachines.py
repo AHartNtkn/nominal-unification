@@ -62,7 +62,7 @@ class NuMachine():
                 else:
                     # Perhapse there's an implementation that avoids this?
                     # Fresh variable names?
-                    raise Exception(str(a1) + "\n" + str(Phi1))
+                    raise UnificationError(str(a1) + "\n" + str(Phi1))
             elif isinstance(res, Bound):
                 a2 = lookupIdx(res.index, Phi2)
                 # {X2 / a2} ∪ σ0
@@ -76,7 +76,7 @@ class NuMachine():
             if alphaEq(clo1, clo2):
                 pass
             else:
-                raise Exception(str(clo1) + "\n" + str(clo2))
+                raise UnificationError(str(clo1) + "\n" + str(clo2))
 
     def eval(self, nuProb):
         """ Given a nu problem, it goes through each in sequence, making

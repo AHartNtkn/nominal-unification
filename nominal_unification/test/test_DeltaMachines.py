@@ -37,11 +37,11 @@ class TestDeltaMachines(unittest.TestCase):
         dp = [DeltaEquation(Closure(Var("X"), emptyScope()),
                             Closure(Var("Y"), emptyScope()))]
         s2 = {"$X0":"d", "$X1":"y", "Y":(Var("$X0"),Var("$X1"))}
-        try:
-            evalDelta(s2, dp, list(map(Var, s2.keys())))
-            assert False
-        except Exception:
-            assert True
+        
+        res = evalDelta(s2, dp, list(map(Var, s2.keys())))
+        resTest = ({"$X0":"d","$X1":"y","X":(Var("$X0"),Var("$X1")),"Y":(Var("$X0"), Var("$X1"))},[])
+
+        assert res == resTest
         
         dp = []
         s2 = {"$X0":"d", "$X1":"y", "X":"x", "Y":(Var("$X0"),Var("$X1"))}
@@ -103,7 +103,7 @@ class TestDeltaMachines(unittest.TestCase):
             
             pull(s, [], d)
             assert False
-        except Exception:
+        except UnificationError:
             assert True
 
         try:
@@ -113,5 +113,5 @@ class TestDeltaMachines(unittest.TestCase):
             
             pull(s, [], d)
             assert False
-        except Exception:
+        except UnificationError:
             assert True

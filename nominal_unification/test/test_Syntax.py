@@ -28,5 +28,5 @@ class TestSyntax(unittest.TestCase):
         try:
             lookupIdx(2, sc)
             assert False
-        except Exception:
+        except UnificationError:
             assert True

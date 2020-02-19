@@ -13,7 +13,7 @@ class TestUnift(unittest.TestCase):
         expr2 = ("x", Abs("y", Var("Y")))
 
         res1 = unify(expr2, expr1)
-        resTest1 = ({"$X0": "d", "$X1": "y", "X": "x", "Y": (Var("$X0"), Var("$X1"))}, [])
+        resTest1 = {"$X0": "d", "$X1": "y", "X": "x", "Y": (Var("$X0"), Var("$X1"))}
         
         assert res1 == resTest1
 
@@ -21,7 +21,7 @@ class TestUnift(unittest.TestCase):
         expr2 = (("x", Var("Y")), "z", Var("W"))
 
         res2 = unify(expr1, expr2)
-        resTest2 = ({'W': 'w', 'X': 'x', 'Y': 'y', 'Z': 'z'}, [])
+        resTest2 = {'W': 'w', 'X': 'x', 'Y': 'y', 'Z': 'z'}
 
         assert res2 == resTest2
         
@@ -29,11 +29,11 @@ class TestUnift(unittest.TestCase):
         expr2 = (Var("Y"), Abs("y", Var("Y")))
 
         res3 = unify(expr1, expr2)
-        resTest3 = ({'X': 'x', 'Y': 'x'}, [])
+        resTest3 = {'X': 'x', 'Y': 'x'}
         
         assert res3 == resTest3
         
         res4 = unify(expr2, expr1)
-        resTest4 = ({'X': 'x', 'Y': 'x'}, [])
+        resTest4 = {'X': 'x', 'Y': 'x'}
         
         assert res4 == resTest4

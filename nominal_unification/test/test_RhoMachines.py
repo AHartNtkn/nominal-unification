@@ -92,42 +92,42 @@ class TestRhoMachines(unittest.TestCase):
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(("X", "y"), emptyScope()), Closure("Y", emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
         
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(Abs("X", "y"), emptyScope()), Closure("Y", emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure("Y", emptyScope()), Closure(("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure("Y", emptyScope()), Closure(Abs("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(Abs("X", "y"), emptyScope()), Closure(("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(("X", "y"), emptyScope()), Closure(Abs("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except UnificationError:
             assert True
         
         rm = RhoMachine()

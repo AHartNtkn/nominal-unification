@@ -1,4 +1,5 @@
-
+class UnificationError(Exception):
+    pass
 
 def isName(x):
     """ Check if the input is a valid name.
@@ -145,7 +146,7 @@ def lookupName(name, scope):
     if scope.i2n[index] == name:
         return Bound(name, index)
 
-    raise Exception("Scope " + str(scope) + " is not well-formed.")
+    raise UnificationError("Scope " + str(scope) + " is not well-formed.")
 
 # lookupIdx : Int -> Scope -> Maybe Name
 
@@ -161,7 +162,7 @@ def lookupIdx(index, scope):
     if index == indexp:
         return a
 
-    raise Exception(str(index) + "\n" + str(scope))
+    raise UnificationError(str(index) + "\n" + str(scope))
 
 
 def emptyScope():

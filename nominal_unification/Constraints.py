@@ -70,13 +70,13 @@ class NuEquation():
 
     def __init__(self, clo1, clo2):
         if not isName(clo1.expr):
-            raise Exception(
+            raise UnificationError(
                 "First argument, " +
                 str(clo1) +
                 ", of Nu Equation must be a name.")
 
         if not isName(clo2.expr) and not isinstance(clo2.expr, Var):
-            raise Exception(
+            raise UnificationError(
                 "Second argument, " +
                 str(clo2) +
                 ", of Nu Equation must be a name or a variable.")
@@ -109,13 +109,13 @@ class DeltaEquation():
 
     def __init__(self, clo1, clo2):
         if not isinstance(clo1.expr, Var):
-            raise Exception(
+            raise UnificationError(
                 "First argument, " +
                 str(clo1) +
                 ", of Delta Equation must be a variable.")
 
         if not isinstance(clo2.expr, Var):
-            raise Exception(
+            raise UnificationError(
                 "Second argument, " +
                 str(clo2) +
                 ", of Delta Equation must be a variable.")
