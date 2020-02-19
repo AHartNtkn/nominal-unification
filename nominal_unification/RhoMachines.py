@@ -4,7 +4,7 @@ from nominal_unification.Constraints import *
 
 
 class RhoMachine():
-    """ A rho machine exists to proccess a list of multi-equations into a list
+    """ A rho machine exists to process a list of multi-equations into a list
         of nu (name-name and name-var) and delta (var-var) problems from two
         full expressions.
     """
@@ -45,11 +45,11 @@ class RhoMachine():
         return a
 
     def step(self, m):
-        """ Given a  single multi-equations, proccess it into a nu problem, a
+        """ Given a single multiequation, process it into a nu problem, a
             delta problem, and a substitution.
 
             In the original white paper, this operation is denoted by the
-            judgement ν0; δ0; σ0 ⊦ e ⇒s ν1; δ1; σ1, where ν0 is an input nu
+            judgment ν0; δ0; σ0 ⊦ e ⇒s ν1; δ1; σ1, where ν0 is an input nu
             problem, δ0 is an input delta problem, σ0 is an input substitution,
             e is an input multi-equation, ν1 is an output nu problem, δ1 is an
             output delta problem, and σ1 is an output substitution.

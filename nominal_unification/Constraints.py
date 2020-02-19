@@ -21,14 +21,11 @@ def alphaEq(clo1, clo2):
     """ Test if two closures are equivalent. Determines the alpha-equivalence
         of two expressions with respect to their scopes.
 
-        1. If both terms are free in their respective scopes and have the same
-        string, then the closures are equivalent.
-
-        2. If both are bound by their respective scopes at the same index then
-        they are also the same closure, even if the terms have different
-        strings.
-
-        3. They are not the same closure, otherwise.
+        If both terms are free in their respective scopes and have the same
+        string, then the closures are equivalent. If both are bound by their
+        respective scopes at the same index then they are also the same
+        closure, even if the terms have different strings. They are not the
+        same closure, otherwise.
 
         See [Same-Free] and [Same-Bound] in Figure 1.
     """
@@ -41,7 +38,7 @@ def alphaEq(clo1, clo2):
     # Φ1 ⊦ Fr a1
     # Φ2 ⊦ Fr a2
     # -------------------
-    # 〈a1; Φ1〉≈〈a2; Φ2〉
+    # 〈a1; Φ1〉 ≈ 〈a2; Φ2〉
     if isinstance(l1, Free) and isinstance(l2, Free):
         return clo1.expr == clo2.expr
 
@@ -50,7 +47,7 @@ def alphaEq(clo1, clo2):
     # Φ1 ⊦ Bd a1 i1
     # Φ2 ⊦ Bd a2 i2
     # -------------------
-    # 〈a1; Φ1〉≈〈a2; Φ2〉
+    # 〈a1; Φ1〉 ≈ 〈a2; Φ2〉
     elif isinstance(l1, Bound) and isinstance(l2, Bound):
         return l1.index == l2.index
 
@@ -67,7 +64,7 @@ class NuEquation():
         These equations are used by nu machines to derive maps from variables
         to names.
 
-        A "Nu Problem" is a list of Nu Equations.
+        A "nu problem" is a list of nu equations.
 
         See Figure 4.
     """
@@ -106,7 +103,7 @@ class DeltaEquation():
         These equations are used by delta machines to derive unifiers between
         sets of variables.
 
-        A "Delta Problem" is a list of Delta Equations.
+        A "delta problem" is a list of delta equations.
 
         See Figure 4.
     """
@@ -138,7 +135,7 @@ class MultiEquation():
         Used by rho machines to compute the nu problems and delta problems to
         be fed into the nu and delta machines.
 
-        A "Rho Problem" is a list of MultiEquations.
+        A "rho problem" is a list of multiequations.
 
         See Figure 7.
     """

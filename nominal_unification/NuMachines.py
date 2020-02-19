@@ -20,11 +20,11 @@ class NuMachine():
             substitution satisfying them.
 
             If it gets an NN equation, it checks that the names match. If they
-            don't the constraint is unsatisfyable, otherwise the equation is
+            don't the constraint is unsatisfiable, otherwise, the equation is
             discharged without changing anything (since nothing has to be
             substituted to satisfy the constraint.)
 
-            If it gets an NV equation, it must find some name which is equal to
+            If it gets an NV equation, it must find some name that is equal to
             the name in the first closure while not being captured in the scope
             of the second closure. It searches for such a name. If the name in
             the first closure is bound its scope, an appropriate bound variable
@@ -33,8 +33,8 @@ class NuMachine():
             is selected.
 
             In the original white paper, this machine is denoted by the
-            judgement σ0 ⊦ ν ⇒ν σ1, where σ0 is an input substitution, ν is an
-            input nu problem, and σ1 is an ouput substitution.
+            judgment σ0 ⊦ ν ⇒ν σ1, where σ0 is an input substitution, ν is an
+            input nu problem, and σ1 is an output substitution.
 
             See [N-V] and [N-N] in Figure 5.
         """
@@ -81,11 +81,11 @@ class NuMachine():
 
     def eval(self, nuProb):
         """ Given a nu problem, it goes through each in sequence, making
-            appropriate additions to the substitution its building.
+            appropriate additions to the substitution of its building.
 
             In the original white paper, this machine is denoted by the
             judgment σ0 ⊦ ν ⇒ν σ1, where σ0 is an input substitution, ν is an
-            input nu problem, and σ1 is an ouput substitution.
+            input nu problem, and σ1 is an output substitution.
 
             See [Empty] in Figure 5
         """

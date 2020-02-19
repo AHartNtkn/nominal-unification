@@ -2,7 +2,7 @@ from nominal_unification.Exceptions import *
 
 
 def isName(x):
-    """ Check if input is a valid names.
+    """ Check if the input is a valid name.
 
         Names should consist of any constant, e.g. strings or integers.
     """
@@ -31,10 +31,10 @@ class Var():
 
 
 class Abs():
-    """ RepresentsAbstractions used to indicate when a variable is being bound.
-        For example, we might represent a lamdba expression "lam x . f x" as
-        ("lam", Abs(x, f(x))), or a universal quantification "forall x . P(x)"
-        as ("all", Abs(x, P(x))).
+    """ Represents abstractions used to indicate when a variable is being
+        bound. For example, we might represent a lamdba expression
+        "lam x . f x" as ("lam", Abs(x, f(x))), or a universal quantification
+        "forall x . P(x)" as ("all", Abs(x, P(x))).
     """
 
     def __init__(self, string, expr):
@@ -47,7 +47,7 @@ class Abs():
 
     def __eq__(self, other):
         return isinstance(
-            self, type(other)) and self.expr == other.expr and self.expr == other.expr
+            self, type(other)) and self.string == other.string and self.expr == other.expr
 
     def __hash__(self):
         return hash((type(self), self.expr1, self.expr2))
@@ -123,8 +123,8 @@ def extend(name, scope):
 
 
 def lookupName(name, scope):
-    """ Given a scope, try finding an name in that scope. If the name is bound,
-        it's cast as a bound variable, if it's not bound it's cast as a free
+    """ Given a scope, try finding a name in that scope. If the name is bound,
+        it's cast as a bound variable, if it's not bound its cast as a free
         variable.
 
         See [Free] and [Bound] in Figure 1.
@@ -155,7 +155,7 @@ def lookupIdx(index, scope):
     """ Given an index and a scope, attempt to find the name matching that
         scope.
 
-        takes an integer index and a scope as input.
+        Takes an integer index and a scope as input.
     """
     a = scope.i2n.get(index, -1)
     indexp = scope.n2i.get(a, -2)

@@ -14,12 +14,13 @@ def pull(s0, xs0, pp):
 
         Given a substitution, a list of known variables, and a delta problem
         (list of var-var equational constraints), the pull operation will solve
-        the contraints to produce a new substitution and new list of variables.
+        the constraints to produce a new substitution and a new list of
+        variables.
 
-        In the original white-paper, this is denoted by the judgement,
+        In the original white-paper, this is denoted by the judgment,
         σ0 ; xs0 ⊦ δ ⇒pull σ1 ; xs1, where σ0 is an input substitution, xs0 is
         an input list of known variables, δ is an input list of delta problems,
-        σ1 is an ouput substitution, and xs1 is an output list of known
+        σ1 is an output substitution, and xs1 is an output list of known
         variables.
 
         See [Empty], [N-N], and [N-V] in Figure 6
@@ -101,10 +102,10 @@ def evalDelta(s0, d0, xs):
     """ Delta machine evaluation. This computes the final unifier on  three
         inputs:  the  substitution  resulting from a nu machine, a delta
         problem (list of var-var equational constraints), and  a  list  of
-        known variables, assumed to be the domain/keys of the substitution
+        known variables assumed to be the domain/keys of the substitution,
         initially.
 
-        In the original white-paper, this is denoted by the judgement,
+        In the original white-paper, this is denoted by the judgment,
         σ0 ; δ0 ⊦ xs ⇒δ σ1 ; δ1, where σ0 is an input substitution, δ0 is an
         input delta problem, xs is an input list of known variables, σ1 is an
         output substitution, and δ1 is an output delta problem.
