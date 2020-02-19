@@ -1,4 +1,3 @@
-from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 
@@ -56,7 +55,7 @@ def pull(s0, xs0, pp):
                 a2 = s0[X2.string]
 
                 if not alphaEq(Closure(a1, Phi1), Closure(a2, Phi2)):
-                    raise NNMismatchError(
+                    raise Exception(
                         str(Closure(a1, Phi1)) + "\n" + str(Closure(a2, Phi2)))
 
                 return pull(s0, xs0, p)
@@ -78,7 +77,7 @@ def pull(s0, xs0, pp):
                 if isinstance(res, Free):
                     a2 = lookupName(a1, Phi2)
                     if not isinstance(a2, Free):
-                        raise NameCaptureError(str(a1) + "\n" + str(Phi1))
+                        raise Exception(str(a1) + "\n" + str(Phi1))
                     a2 = a2.string
                 elif isinstance(res, Bound):
                     a2 = lookupIdx(res.index, Phi2)

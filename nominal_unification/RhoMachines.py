@@ -1,4 +1,3 @@
-from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 
@@ -94,9 +93,9 @@ class RhoMachine():
                             a1, Phi1), Closure(
                             X2, Phi2)))
             elif isinstance(er, tuple):
-                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                raise Exception(str(clo1) + "\n" + str(clo2))
             elif isinstance(er, Abs):
-                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                raise Exception(str(clo1) + "\n" + str(clo2))
             else:
                 raise Exception(str(er) + 'is not an expression')
         elif isinstance(el, Var):
@@ -208,7 +207,7 @@ class RhoMachine():
                 raise Exception(str(er) + 'is not an expression')
         elif isinstance(el, tuple):
             if isName(er):
-                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                raise Exception(str(clo1) + "\n" + str(clo2))
             elif isinstance(er, Var):
                 self.step(MultiEquation(clo2, clo1))
             elif isinstance(er, tuple):
@@ -221,7 +220,7 @@ class RhoMachine():
                 # p0; δ0; σ0 ⊦ (〈(li...); Φ1〉≈EE〈(ri...); Φ2〉) ⇒s pi'; δi'; σi'
 
                 if len(el) != len(er):
-                    raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                    raise Exception(str(clo1) + "\n" + str(clo2))
 
                 for li, ri in zip(el, er):
                     self.step(
@@ -230,16 +229,16 @@ class RhoMachine():
                                 li, Phi1), Closure(
                                 ri, Phi2)))
             elif isinstance(er, Abs):
-                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                raise Exception(str(clo1) + "\n" + str(clo2))
             else:
                 raise Exception(str(er) + 'is not an expression')
         elif isinstance(el, Abs):
             if isName(er):
-                raise EEMismatchError(clo1, clo2)
+                raise Exception(clo1, clo2)
             elif isinstance(er, Var):
                 self.step(MultiEquation(clo2, clo1))
             elif isinstance(er, tuple):
-                raise EEMismatchError(str(clo1) + "\n" + str(clo2))
+                raise Exception(str(clo1) + "\n" + str(clo2))
             elif isinstance(er, Abs):
                 # [A-A] Figure 8
                 # Φ1' = (ext Φ1 a1)

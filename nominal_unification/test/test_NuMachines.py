@@ -1,6 +1,5 @@
 import unittest
 
-from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 from nominal_unification.NuMachines import *
@@ -35,31 +34,31 @@ class TestNuMachines(unittest.TestCase):
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl3s))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl1c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl2c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl1n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl2n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl1v))
@@ -78,31 +77,31 @@ class TestNuMachines(unittest.TestCase):
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl3s))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl1c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl2c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl1n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl2n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl2s, cl1v))
@@ -124,19 +123,19 @@ class TestNuMachines(unittest.TestCase):
             nm = NuMachine()
             nm.step(NuEquation(cl3s, cl2c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl3s, cl1n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl3s, cl2n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl1v))
@@ -155,19 +154,19 @@ class TestNuMachines(unittest.TestCase):
             nm = NuMachine()
             nm.step(NuEquation(cl1c, cl2c))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1c, cl1n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1c, cl2n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl1c, cl1v))
@@ -186,13 +185,13 @@ class TestNuMachines(unittest.TestCase):
             nm = NuMachine()
             nm.step(NuEquation(cl2c, cl1n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2c, cl2n))
             assert False
-        except NNMismatchError:
+        except Exception:
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl2c, cl1v))
