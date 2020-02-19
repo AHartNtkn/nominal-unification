@@ -26,10 +26,10 @@ class TestNuMachines(unittest.TestCase):
         
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl1s))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl2s))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1s, cl3s))
@@ -62,17 +62,17 @@ class TestNuMachines(unittest.TestCase):
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl1v))
-        assert nm.subst == {'stuff':'stuff'}
+        assert nm.s == {'stuff':'stuff'}
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl2v))
-        assert nm.subst == {'stuff':'too'}
+        assert nm.s == {'stuff':'too'}
         nm = NuMachine()
         nm.step(NuEquation(cl1s, cl3v))
-        assert nm.subst == {'new':'stuff'}
+        assert nm.s == {'new':'stuff'}
         
         nm = NuMachine()
         nm.step(NuEquation(cl2s, cl2s))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2s, cl3s))
@@ -105,20 +105,20 @@ class TestNuMachines(unittest.TestCase):
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl2s, cl1v))
-        assert nm.subst == {'stuff':'stuff'}
+        assert nm.s == {'stuff':'stuff'}
         nm = NuMachine()
         nm.step(NuEquation(cl2s, cl2v))
-        assert nm.subst == {'stuff':'too'}
+        assert nm.s == {'stuff':'too'}
         nm = NuMachine()
         nm.step(NuEquation(cl2s, cl3v))
-        assert nm.subst == {'new':'stuff'}
+        assert nm.s == {'new':'stuff'}
 
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl3s))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl1c))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl3s, cl2c))
@@ -139,17 +139,17 @@ class TestNuMachines(unittest.TestCase):
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl1v))
-        assert nm.subst == {'stuff':'neat'}
+        assert nm.s == {'stuff':'neat'}
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl2v))
-        assert nm.subst == {'stuff':'stuff'}
+        assert nm.s == {'stuff':'stuff'}
         nm = NuMachine()
         nm.step(NuEquation(cl3s, cl3v))
-        assert nm.subst == {'new':'neat'}
+        assert nm.s == {'new':'neat'}
 
         nm = NuMachine()
         nm.step(NuEquation(cl1c, cl1c))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl1c, cl2c))
@@ -170,17 +170,17 @@ class TestNuMachines(unittest.TestCase):
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl1c, cl1v))
-        assert nm.subst == {'stuff':'neat'}
+        assert nm.s == {'stuff':'neat'}
         nm = NuMachine()
         nm.step(NuEquation(cl1c, cl2v))
-        assert nm.subst == {'stuff':'stuff'}
+        assert nm.s == {'stuff':'stuff'}
         nm = NuMachine()
         nm.step(NuEquation(cl1c, cl3v))
-        assert nm.subst == {'new':'neat'}
+        assert nm.s == {'new':'neat'}
 
         nm = NuMachine()
         nm.step(NuEquation(cl2c, cl2c))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         try:
             nm = NuMachine()
             nm.step(NuEquation(cl2c, cl1n))
@@ -195,69 +195,44 @@ class TestNuMachines(unittest.TestCase):
             assert True
         nm = NuMachine()
         nm.step(NuEquation(cl2c, cl1v))
-        assert nm.subst == {'stuff':'cool'}
+        assert nm.s == {'stuff':'cool'}
         nm = NuMachine()
         nm.step(NuEquation(cl2c, cl2v))
-        assert nm.subst == {'stuff':'cool'}
+        assert nm.s == {'stuff':'cool'}
         nm = NuMachine()
         nm.step(NuEquation(cl2c, cl3v))
-        assert nm.subst == {'new':'cool'}
+        assert nm.s == {'new':'cool'}
 
         nm = NuMachine()
         nm.step(NuEquation(cl1n, cl1n))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         nm = NuMachine()
         nm.step(NuEquation(cl1n, cl2n))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         nm = NuMachine()
         nm.step(NuEquation(cl1n, cl1v))
-        assert nm.subst == {'stuff':'new'}
+        assert nm.s == {'stuff':'new'}
         nm = NuMachine()
         nm.step(NuEquation(cl1n, cl2v))
-        assert nm.subst == {'stuff':'new'}
+        assert nm.s == {'stuff':'new'}
         nm = NuMachine()
         nm.step(NuEquation(cl1n, cl3v))
-        assert nm.subst == {'new':'new'}
+        assert nm.s == {'new':'new'}
 
         nm = NuMachine()
         nm.step(NuEquation(cl2n, cl2n))
-        assert nm.subst == dict([])
+        assert nm.s == dict([])
         nm = NuMachine()
         nm.step(NuEquation(cl2n, cl1v))
-        assert nm.subst == {'stuff':'new'}
+        assert nm.s == {'stuff':'new'}
         nm = NuMachine()
         nm.step(NuEquation(cl2n, cl2v))
-        assert nm.subst == {'stuff':'new'}
+        assert nm.s == {'stuff':'new'}
         nm = NuMachine()
         nm.step(NuEquation(cl2n, cl3v))
-        assert nm.subst == {'new':'new'}
+        assert nm.s == {'new':'new'}
 
     def test_evalNu(self):
-        bm1 = extend("cool", extend("stuff", emptyScope()))
-        bm2 = extend("neat", extend("stuff", emptyScope()))
-        bm3 = extend("neat", extend("stuff", extend("too", emptyScope())))
-
-        cl2s = Closure("stuff", bm2)
-
-        cl1n = Closure("new", bm1)
-        cl2n = Closure("new", bm2)
-        
-        cl1v = Closure(Var("stuff"), bm2)
-        cl2v = Closure(Var("stuff"), bm3)
-        cl3v = Closure(Var("new"), bm2)
-        
-        nprob = [NuEquation(cl1n, cl1n),
-                 NuEquation(cl1n, cl2n),
-                 NuEquation(cl1n, cl1v),
-                 NuEquation(cl1n, cl2v),
-                 NuEquation(cl2s, cl2v),
-                 NuEquation(cl1n, cl3v)]
-        
-        nm = NuMachine()
-        nm.eval(nprob)
-        
-        assert nm.subst == {"new":"new", "stuff":"too"}
-        
         s1 = {"Y": (Var("$X0"), Var("$X1"))}
         np = [NuEquation(Closure("z", Scope({"z":0}, {0:"z"})),
                      Closure(Var("$X1"), Scope({"y":0}, {0:"y"}))),
@@ -266,7 +241,7 @@ class TestNuMachines(unittest.TestCase):
         
         nu = NuMachine(s1)
         nu.eval(np)
-        assert nu.subst == {"$X0":"d", "$X1":"y", "Y":(Var("$X0"),Var("$X1"))}
+        assert nu.s == {"$X0":"d", "$X1":"y", "Y":(Var("$X0"),Var("$X1"))}
         
         s1 = {"Y": (Var("$X0"), Var("$X1"))}
         np = [NuEquation(Closure("z", Scope({"z":0}, {0:"z"})),
@@ -278,7 +253,7 @@ class TestNuMachines(unittest.TestCase):
         
         nu = NuMachine(s1)
         nu.eval(np)
-        assert nu.subst == {"$X0":"d", "$X1":"y", "X":"x", "Y":(Var("$X0"),Var("$X1"))}
+        assert nu.s == {"$X0":"d", "$X1":"y", "X":"x", "Y":(Var("$X0"),Var("$X1"))}
         
         s1 = {}
         np = [NuEquation(Closure("x", Scope({"z":0}, {0:"z"})),
@@ -286,5 +261,5 @@ class TestNuMachines(unittest.TestCase):
         
         nu = NuMachine(s1)
         nu.eval(np)
-        assert nu.subst == {"Y":"x"}
+        assert nu.s == {"Y":"x"}
 

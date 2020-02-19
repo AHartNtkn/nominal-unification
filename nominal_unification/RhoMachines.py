@@ -130,6 +130,13 @@ class RhoMachine():
 
                 X = [self.newVar() for _ in er]
 
+                if Y.string in self.s:
+                    self.step(
+                        MultiEquation(
+                            Closure(self.s[Y.string], Phi1),
+                            Closure(tuple(X), Phi1)
+                    ))
+
                 self.s[Y.string] = tuple(X)
 
                 for Xi, ai in zip(X, a):
@@ -160,6 +167,13 @@ class RhoMachine():
                     Xt = self.newVar()
                     Phi1p = extend(a1, Phi1)
                     Phi2p = extend(a2, Phi2)
+
+                    if X1.string in self.s:
+                        self.step(
+                            MultiEquation(
+                                Closure(self.s[X1.string], Phi1),
+                                Closure(Abs(a1, Xt), Phi1)
+                        ))
 
                     self.s[X1.string] = Abs(a1, Xt)
 
@@ -196,13 +210,19 @@ class RhoMachine():
                     Phi1p = extend(a1, Phi1)
                     Phi2p = extend(a2, Phi2)
 
+                    if X1.string in self.s:
+                        self.step(
+                            MultiEquation(
+                                Closure(self.s[X1.string], Phi1),
+                                Closure(Abs(a1, Xt), Phi1)
+                        ))
+
                     self.s[X1.string] = Abs(a1, Xt)
 
                     self.step(
                         MultiEquation(
-                            Closure(
-                                Xt, Phi1p), Closure(
-                                t2, Phi2p)))
+                            Closure(Xt, Phi1p),
+                            Closure(t2, Phi2p)))
             else:
                 raise UnificationError(str(er) + 'is not an expression')
         elif isinstance(el, tuple):

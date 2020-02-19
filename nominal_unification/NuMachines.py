@@ -8,11 +8,11 @@ class NuMachine():
         map unifying them.
     """
 
-    def __init__(self, subst=None):
-        if subst is None:
-            self.subst = dict([])
+    def __init__(self, s=None):
+        if s is None:
+            self.s = dict([])
         else:
-            self.subst = subst
+            self.s = s
 
     def step(self, nuEq):
         """ Given a nu equation, this will generate the appropriate
@@ -57,16 +57,29 @@ class NuMachine():
             if isinstance(res, Free):
                 a2 = lookupName(a1, Phi2)
                 if isinstance(a2, Free):
+                    if X2.string in self.s:
+                        self.step(
+                            NuEquation(
+                                Closure(self.s[X2.string], Phi2),
+                                Closure(a2.string, Phi2)))
+
                     # {X2 / a2} ∪ σ0
-                    self.subst[X2.string] = a2.string
+                    self.s[X2.string] = a2.string
                 else:
                     # Perhapse there's an implementation that avoids this?
                     # Fresh variable names?
                     raise UnificationError(str(a1) + "\n" + str(Phi1))
             elif isinstance(res, Bound):
                 a2 = lookupIdx(res.index, Phi2)
+
+                if X2.string in self.s:
+                    self.step(
+                        NuEquation(
+                            Closure(self.s[X2.string], Phi2),
+                            Closure(a2, Phi2)))
+
                 # {X2 / a2} ∪ σ0
-                self.subst[X2.string] = a2
+                self.s[X2.string] = a2
         else:
             # [N-N] Figure 5
             # 〈a1; Φ1〉≈〈a2; Φ2〉

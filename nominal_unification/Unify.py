@@ -16,7 +16,7 @@ def _unify(l, r):
     nu = NuMachine(rm.s)
     nu.eval(rm.p)
 
-    return evalDelta(nu.subst, rm.d, list(map(Var, nu.subst.keys())))
+    return evalDelta(nu.s, rm.d, list(map(Var, nu.s.keys())))
 
 def unify(l, r):
     """ Given two well-formed expressions (consisting of Var, Abs, tuples,
