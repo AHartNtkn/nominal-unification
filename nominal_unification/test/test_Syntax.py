@@ -1,6 +1,5 @@
 import unittest
 
-from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 
 class TestSyntax(unittest.TestCase):
@@ -29,5 +28,5 @@ class TestSyntax(unittest.TestCase):
         try:
             lookupIdx(2, sc)
             assert False
-        except NoMatchingBinderError:
+        except Exception:
             assert True
