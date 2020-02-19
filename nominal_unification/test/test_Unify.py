@@ -37,3 +37,15 @@ class TestUnift(unittest.TestCase):
         resTest4 = {'X': 'x', 'Y': 'x'}
         
         assert res4 == resTest4
+
+        assert unify(Var('x'), 1) == {'x':1}
+
+        assert unify((Var('x'), Var('y')), (1, 2)) == {'x':1, 'y':2}
+
+        assert unify((1, Var('x')), (1, 2)) == {'x':2}
+
+        assert unify((Var('x'), Var('x')), (1, 2)) == False
+
+        assert unify(1, 1) == {}
+
+        assert unify(1, 2) == False
