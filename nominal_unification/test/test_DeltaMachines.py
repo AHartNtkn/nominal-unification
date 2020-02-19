@@ -1,5 +1,6 @@
 import unittest
 
+from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 from nominal_unification.DeltaMachines import *
@@ -113,5 +114,5 @@ class TestDeltaMachines(unittest.TestCase):
             
             pull(s, [], d)
             assert False
-        except Exception:
+        except NNMismatchError:
             assert True

@@ -1,3 +1,4 @@
+from nominal_unification.Exceptions import *
 
 
 def isName(x):
@@ -161,7 +162,7 @@ def lookupIdx(index, scope):
     if index == indexp:
         return a
 
-    raise Exception(str(index) + "\n" + str(scope))
+    raise NoMatchingBinderError(str(index) + "\n" + str(scope))
 
 
 def emptyScope():

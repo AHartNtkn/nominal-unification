@@ -1,5 +1,6 @@
 import unittest
 
+from nominal_unification.Exceptions import *
 from nominal_unification.Syntax import *
 from nominal_unification.Constraints import *
 from nominal_unification.RhoMachines import *
@@ -92,42 +93,42 @@ class TestRhoMachines(unittest.TestCase):
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(("X", "y"), emptyScope()), Closure("Y", emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
         
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(Abs("X", "y"), emptyScope()), Closure("Y", emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure("Y", emptyScope()), Closure(("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure("Y", emptyScope()), Closure(Abs("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(Abs("X", "y"), emptyScope()), Closure(("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
 
         try:
             rm = RhoMachine()
             rm.step(MultiEquation(Closure(("X", "y"), emptyScope()), Closure(Abs("X", "y"), emptyScope())))
             assert False
-        except Exception:
+        except EEMismatchError:
             assert True
         
         rm = RhoMachine()
